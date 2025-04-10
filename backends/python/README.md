@@ -1,1 +1,4 @@
-A TODO backend implementation using Python and FastAPI
+# Python TODO Backend
+
+A backend implementation of a TODO application using Python and FastAPI.
+
