@@ -1,9 +1,11 @@
 from typing import Protocol
 
-from app.domain.models import TodoListID
+from app.domain.models import TodoList, TodoListID
 
 
 class TodoListRepository(Protocol):
+    def todo_lists(self) -> list[TodoList]: ...
+
     def new_todo_list(self, name: str) -> TodoListID: ...
 
     def update_todo_list(self, id: TodoListID, name: str) -> None: ...
