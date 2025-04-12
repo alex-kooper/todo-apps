@@ -1,17 +1,17 @@
-from typing import Dict
-
 from app.domain.models import TodoList, TodoListID
+from app.domain.todo_list_repository import TodoListRepository
 
 
 class InMemoryTodoListRepository:
     """In-memory implementation of the TodoListRepository protocol."""
 
-    _storage: Dict[TodoListID, TodoList]
+    _storage: dict[TodoListID, TodoList]
     _current_id: int
 
-    def __init__(self):
+    def __init__(self, item_repository: TodoListRepository):
         self._current_id = 0
         self._storage = {}
+        self._item_repository = item_repository
 
     def all_lists(self) -> list[TodoList]:
         return list(self._storage.values())
@@ -36,6 +36,7 @@ class InMemoryTodoListRepository:
 
     def delete_list(self, id: TodoListID) -> None:
         if id in self._storage:
+            self._item_repository.delete_list(id)
             del self._storage[id]
         else:
             raise KeyError(f"TodoList with ID {id} does not exist.")

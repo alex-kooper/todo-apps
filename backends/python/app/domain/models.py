@@ -8,7 +8,6 @@ TodoItemOrder = NewType("TodoItemOrder", int)
 
 
 class TodoItemInfo(BaseModel):
-    todo_list_id: TodoListID
     description: str
     order: TodoItemOrder
     is_completed: bool = False
@@ -16,6 +15,7 @@ class TodoItemInfo(BaseModel):
 
 class TodoItem(TodoItemInfo):
     id: TodoItemID
+    list_id: TodoListID
 
 
 class TodoList(BaseModel):
