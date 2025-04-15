@@ -86,6 +86,15 @@ class InMemoryTodoItemRepository:
         # Remove from storage
         del self._item_storage[id]
 
+    def delete_list_items(self, list_id: TodoListID) -> None:
+        if list_id not in self._list_to_items:
+            raise KeyError(f"TodoList with ID {list_id} does not exist.")
+
+        for item_id in self._list_to_items[list_id]:
+            del self._item_storage[item_id]
+
+        del self._list_to_items[list_id]
+
     def _next_item_id(self) -> TodoItemID:
         self._current_item_id += 1
         return TodoItemID(self._current_item_id)
@@ -108,12 +117,3 @@ class InMemoryTodoItemRepository:
         # Add to new list
         self._list_to_items.setdefault(new_list_id, []).append(id)
         item.list_id = new_list_id
-
-    def _delete_list_items(self, list_id: TodoListID) -> None:
-        if list_id not in self._list_to_items:
-            raise KeyError(f"TodoList with ID {list_id} does not exist.")
-
-        for item_id in self._list_to_items[list_id]:
-            del self._item_storage[item_id]
-
-        del self._list_to_items[list_id]
