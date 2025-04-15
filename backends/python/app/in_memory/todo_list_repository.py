@@ -22,17 +22,21 @@ class InMemoryTodoListRepository:
         else:
             raise KeyError(f"TodoList with ID {id} does not exist.")
 
-    def new_list(self, name: str) -> TodoListID:
+    def new_list(self, name: str) -> TodoList:
         self._current_id += 1
         id = TodoListID(self._current_id)
-        self._storage[id] = TodoList(id=id, name=name)
-        return id
+        new_list = TodoList(id=id, name=name)
+        self._storage[id] = new_list
+        return new_list
 
-    def update_list(self, id: TodoListID, name: str) -> None:
-        if id in self._storage:
-            self._storage[id].name = name
-        else:
+    def update_list(self, id: TodoListID, name: str) -> TodoList:
+        if id not in self._storage:
             raise KeyError(f"TodoList with ID {id} does not exist.")
+
+        list = self._storage[id]
+        list.name = name
+
+        return list
 
     def delete_list(self, id: TodoListID) -> None:
         if id in self._storage:

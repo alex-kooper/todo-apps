@@ -1,6 +1,12 @@
 from typing import Protocol
 
-from app.domain.models import TodoItem, TodoItemID, TodoItemInfo, TodoListID
+from app.domain.models import (
+    TodoItem,
+    TodoItemCreate,
+    TodoItemID,
+    TodoItemUpdate,
+    TodoListID,
+)
 
 
 class TodoItemRepository(Protocol):
@@ -8,12 +14,12 @@ class TodoItemRepository(Protocol):
 
     def items_with_status(
         self, list_id: TodoListID, is_completed: bool
-    ) -> list[TodoItemInfo]: ...
+    ) -> list[TodoItem]: ...
 
-    def new_item(self, list_id: TodoListID, item: TodoItemInfo) -> TodoItemID: ...
+    def item_by_id(self, id: TodoItemID) -> TodoItem: ...
 
-    def update_item(self, id: TodoItemID, item: TodoItemInfo) -> None: ...
+    def new_item(self, item: TodoItemCreate) -> TodoItem: ...
 
-    def move_item(self, id: TodoItemID, new_list_id: TodoListID) -> None: ...
+    def update_item(self, id: TodoItemID, item: TodoItemUpdate) -> TodoItem: ...
 
     def delete_item(self, id: TodoItemID) -> None: ...
