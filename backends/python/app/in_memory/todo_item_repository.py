@@ -88,7 +88,7 @@ class InMemoryTodoItemRepository:
 
     def delete_list_items(self, list_id: TodoListID) -> None:
         if list_id not in self._list_to_items:
-            raise KeyError(f"TodoList with ID {list_id} does not exist.")
+            return
 
         for item_id in self._list_to_items[list_id]:
             del self._item_storage[item_id]
