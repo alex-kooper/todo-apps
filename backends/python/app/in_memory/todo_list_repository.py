@@ -1,4 +1,5 @@
 from app.domain.models import TodoList, TodoListID
+from app.domain.todo_list_repository import TodoListNotFoundError
 from app.in_memory.todo_item_repository import InMemoryTodoItemRepository
 
 
@@ -20,7 +21,7 @@ class InMemoryTodoListRepository:
         if id in self._storage:
             return self._storage[id]
         else:
-            raise KeyError(f"TodoList with ID {id} does not exist.")
+            raise TodoListNotFoundError(id)
 
     async def new_list(self, name: str) -> TodoList:
         self._current_id += 1
@@ -31,7 +32,7 @@ class InMemoryTodoListRepository:
 
     async def update_list(self, id: TodoListID, name: str) -> TodoList:
         if id not in self._storage:
-            raise KeyError(f"TodoList with ID {id} does not exist.")
+            raise TodoListNotFoundError(id)
 
         list = self._storage[id]
         list.name = name
@@ -40,7 +41,7 @@ class InMemoryTodoListRepository:
 
     async def delete_list(self, id: TodoListID) -> None:
         if id not in self._storage:
-            raise KeyError(f"TodoList with ID {id} does not exist.")
+            raise TodoListNotFoundError(id)
 
         self._item_repository.delete_list_items(id)
         del self._storage[id]

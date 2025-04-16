@@ -3,6 +3,11 @@ from typing import Protocol
 from app.domain.models import TodoList, TodoListID
 
 
+class TodoListNotFoundError(Exception):
+    def __init__(self, id: TodoListID):
+        self.id = id
+
+
 class TodoListRepository(Protocol):
     async def all_lists(self) -> list[TodoList]: ...
 
