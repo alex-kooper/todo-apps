@@ -28,24 +28,24 @@ RepositoryDep = Annotated[TodoListRepository, Depends(get_repository)]
 
 @router.get("/", response_model=list[TodoList])
 async def all_lists(repo: RepositoryDep):
-    return repo.all_lists()
+    return await repo.all_lists()
 
 
 @router.get("/{id}", response_model=TodoList)
 async def get_list_by_id(id: TodoListID, repo: RepositoryDep):
-    return repo.list_by_id(id)
+    return await repo.list_by_id(id)
 
 
 @router.post("/", response_model=TodoList)
 async def new_list(name: str, repo: RepositoryDep):
-    return repo.new_list(name)
+    return await repo.new_list(name)
 
 
 @router.put("/{id}", response_model=TodoList)
 async def update_list(id: TodoListID, name: str, repo: RepositoryDep):
-    return repo.update_list(id, name)
+    return await repo.update_list(id, name)
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_list(id: TodoListID, repo: RepositoryDep):
-    return repo.delete_list(id)
+    return await repo.delete_list(id)

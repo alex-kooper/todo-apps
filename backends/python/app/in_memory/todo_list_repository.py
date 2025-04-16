@@ -13,23 +13,23 @@ class InMemoryTodoListRepository:
         self._storage = {}
         self._item_repository = item_repository
 
-    def all_lists(self) -> list[TodoList]:
+    async def all_lists(self) -> list[TodoList]:
         return list(self._storage.values())
 
-    def list_by_id(self, id: TodoListID) -> TodoList:
+    async def list_by_id(self, id: TodoListID) -> TodoList:
         if id in self._storage:
             return self._storage[id]
         else:
             raise KeyError(f"TodoList with ID {id} does not exist.")
 
-    def new_list(self, name: str) -> TodoList:
+    async def new_list(self, name: str) -> TodoList:
         self._current_id += 1
         id = TodoListID(self._current_id)
         new_list = TodoList(id=id, name=name)
         self._storage[id] = new_list
         return new_list
 
-    def update_list(self, id: TodoListID, name: str) -> TodoList:
+    async def update_list(self, id: TodoListID, name: str) -> TodoList:
         if id not in self._storage:
             raise KeyError(f"TodoList with ID {id} does not exist.")
 
@@ -38,7 +38,7 @@ class InMemoryTodoListRepository:
 
         return list
 
-    def delete_list(self, id: TodoListID) -> None:
+    async def delete_list(self, id: TodoListID) -> None:
         if id not in self._storage:
             raise KeyError(f"TodoList with ID {id} does not exist.")
 
