@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.domain.models import TodoList, TodoListID
 from app.domain.todo_list_repository import TodoListNotFoundError, TodoListRepository
@@ -9,7 +9,7 @@ from app.domain.todo_list_repository import TodoListNotFoundError, TodoListRepos
 router = APIRouter(
     prefix="/todo-lists",
     tags=["todo-lists"],
-    responses={404: {"description": "Not found"}},
+    responses={404: {"description": "TODO list not found"}},
 )
 
 _repository: TodoListRepository
@@ -25,8 +25,6 @@ def repository(repository: TodoListRepository):
 
 
 RepositoryDep = Annotated[TodoListRepository, Depends(get_repository)]
-
-app = FastAPI()
 
 
 @contextmanager

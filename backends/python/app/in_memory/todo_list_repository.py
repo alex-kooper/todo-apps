@@ -43,5 +43,5 @@ class InMemoryTodoListRepository:
         if id not in self._storage:
             raise TodoListNotFoundError(id)
 
-        self._item_repository.delete_list_items(id)
+        await self._item_repository.delete_list_items(id)
         del self._storage[id]
