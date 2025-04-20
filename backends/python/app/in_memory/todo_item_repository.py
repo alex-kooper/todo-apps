@@ -96,7 +96,10 @@ class InMemoryTodoItemRepository:
         # Remove from storage
         del self._item_storage[id]
 
-    async def delete_list_items(self, list_id: TodoListID) -> None:
+    async def new_list(self, list_id: TodoListID) -> None:
+        self._list_to_items[list_id] = []
+
+    async def delete_list(self, list_id: TodoListID) -> None:
         if list_id not in self._list_to_items:
             return
 
@@ -127,6 +130,3 @@ class InMemoryTodoItemRepository:
         # Add to new list
         self._list_to_items.setdefault(new_list_id, []).append(id)
         item.list_id = new_list_id
-
-    async def new_list(self, list_id: TodoListID) -> None:
-        self._list_to_items[list_id] = []
