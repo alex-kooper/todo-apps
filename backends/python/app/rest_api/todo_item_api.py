@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.domain.models import (
     TodoItem,
@@ -14,6 +14,7 @@ from app.domain.todo_item_repository import TodoItemNotFoundError, TodoItemRepos
 from app.domain.todo_list_repository import TodoListNotFoundError
 
 router = APIRouter(
+    prefix="/todo-items",
     tags=["todo-items"],
     responses={404: {"description": "TODO list or TODO item not found"}},
 )
@@ -49,31 +50,35 @@ def exception_handling():
         ) from e
 
 
-@router.get("/todo-lists/{list_id}/items", response_model=list[TodoItem])
-async def all_items(list_id: TodoListID, repo: RepositoryDep):
+@router.get("/", response_model=list[TodoItem])
+async def items(
+    repo: RepositoryDep,
+    list_id: TodoListID | None = Query(None, alias="list-id"),
+    is_completed: bool | None = Query(None, alias="is-completed"),
+):
     with exception_handling():
-        return await repo.all_items(list_id)
+        return await repo.items(list_id, is_completed)
 
 
-@router.get("/todo-items/{item_id}", response_model=TodoItem)
-async def get_item_by_id(item_id: TodoItemID, repo: RepositoryDep):
+@router.get("/{item_id}", response_model=TodoItem)
+async def item_by_id(repo: RepositoryDep, item_id: TodoItemID):
     with exception_handling():
         return await repo.item_by_id(item_id)
 
 
-@router.post("/todo-lists/{list_id}/items", response_model=TodoItem)
-async def new_item(list_id: TodoListID, item: TodoItemCreate, repo: RepositoryDep):
+@router.post("/", response_model=TodoItem)
+async def new_item(repo: RepositoryDep, item: TodoItemCreate):
     with exception_handling():
         return await repo.new_item(item)
 
 
-@router.patch("/todo-items/{item_id}", response_model=TodoItem)
-async def update_item(item_id: TodoItemID, item: TodoItemUpdate, repo: RepositoryDep):
+@router.patch("/{item_id}", response_model=TodoItem)
+async def update_item(repo: RepositoryDep, item_id: TodoItemID, item: TodoItemUpdate):
     with exception_handling():
         return await repo.update_item(item_id, item)
 
 
-@router.delete("/todo-items/{item_id}", response_model=TodoItem)
-async def delete_item(item_id: TodoItemID, repo: RepositoryDep):
+@router.delete("/{item_id}", response_model=TodoItem)
+async def delete_item(repo: RepositoryDep, item_id: TodoItemID):
     with exception_handling():
         return await repo.delete_item(item_id)

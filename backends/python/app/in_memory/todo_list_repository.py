@@ -27,7 +27,9 @@ class InMemoryTodoListRepository:
         self._current_id += 1
         id = TodoListID(self._current_id)
         new_list = TodoList(id=id, name=name)
+
         self._storage[id] = new_list
+        await self._item_repository.new_list(id)
         return new_list
 
     async def update_list(self, id: TodoListID, name: str) -> TodoList:
