@@ -60,10 +60,10 @@ async def items(
         return await repo.items(list_id, is_completed)
 
 
-@router.get("/{item_id}", response_model=TodoItem)
-async def item_by_id(repo: RepositoryDep, item_id: TodoItemID):
+@router.get("/{id}", response_model=TodoItem)
+async def item_by_id(repo: RepositoryDep, id: TodoItemID):
     with exception_handling():
-        return await repo.item_by_id(item_id)
+        return await repo.item_by_id(id)
 
 
 @router.post("/", response_model=TodoItem)
@@ -72,13 +72,13 @@ async def new_item(repo: RepositoryDep, item: TodoItemCreate):
         return await repo.new_item(item)
 
 
-@router.patch("/{item_id}", response_model=TodoItem)
-async def update_item(repo: RepositoryDep, item_id: TodoItemID, item: TodoItemUpdate):
+@router.patch("/{id}", response_model=TodoItem)
+async def update_item(repo: RepositoryDep, id: TodoItemID, item: TodoItemUpdate):
     with exception_handling():
-        return await repo.update_item(item_id, item)
+        return await repo.update_item(id, item)
 
 
-@router.delete("/{item_id}", response_model=TodoItem)
-async def delete_item(repo: RepositoryDep, item_id: TodoItemID):
+@router.delete("/{id}", response_model=TodoItem)
+async def delete_item(repo: RepositoryDep, id: TodoItemID):
     with exception_handling():
-        return await repo.delete_item(item_id)
+        return await repo.delete_item(id)

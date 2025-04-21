@@ -14,7 +14,7 @@ class InMemoryTodoListRepository:
         self._storage = {}
         self._item_repository = item_repository
 
-    async def all_lists(self) -> list[TodoList]:
+    async def lists(self) -> list[TodoList]:
         return list(self._storage.values())
 
     async def list_by_id(self, id: TodoListID) -> TodoList:

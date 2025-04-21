@@ -39,12 +39,12 @@ def exception_handling():
 
 
 @router.get("/", response_model=list[TodoList])
-async def all_lists(repo: RepositoryDep):
-    return await repo.all_lists()
+async def lists(repo: RepositoryDep):
+    return await repo.lists()
 
 
 @router.get("/{id}", response_model=TodoList)
-async def get_list_by_id(id: TodoListID, repo: RepositoryDep):
+async def list_by_id(id: TodoListID, repo: RepositoryDep):
     with exception_handling():
         return await repo.list_by_id(id)
 
