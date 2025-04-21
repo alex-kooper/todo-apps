@@ -1,18 +1,16 @@
 from app.domain.models import TodoList, TodoListID
-from app.domain.todo_list_repository import TodoListNotFoundError
-from app.in_memory.todo_item_repository import InMemoryTodoItemRepository
+from app.domain.todo_list_service import TodoListNotFoundError
+from app.in_memory.todo_item_service import TodoItemServiceWithInMemoryStorage
 
 
-class InMemoryTodoListRepository:
-    """In-memory implementation of the TodoListRepository protocol."""
-
+class TodoListServiceWithInMemoryStorage:
     _storage: dict[TodoListID, TodoList]
     _current_id: int
 
-    def __init__(self, item_repository: InMemoryTodoItemRepository):
+    def __init__(self, item_service: TodoItemServiceWithInMemoryStorage):
         self._current_id = 0
         self._storage = {}
-        self._item_repository = item_repository
+        self._item_service = item_service
 
     async def lists(self) -> list[TodoList]:
         return list(self._storage.values())
@@ -29,7 +27,7 @@ class InMemoryTodoListRepository:
         new_list = TodoList(id=id, name=name)
 
         self._storage[id] = new_list
-        await self._item_repository.new_list(id)
+        await self._item_service.new_list(id)
         return new_list
 
     async def update_list(self, id: TodoListID, name: str) -> TodoList:
@@ -45,5 +43,5 @@ class InMemoryTodoListRepository:
         if id not in self._storage:
             raise TodoListNotFoundError(id)
 
-        await self._item_repository.delete_list(id)
+        await self._item_service.delete_list(id)
         del self._storage[id]

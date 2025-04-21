@@ -10,8 +10,8 @@ from app.domain.models import (
     TodoItemUpdate,
     TodoListID,
 )
-from app.domain.todo_item_repository import TodoItemNotFoundError, TodoItemRepository
-from app.domain.todo_list_repository import TodoListNotFoundError
+from app.domain.todo_item_service import TodoItemNotFoundError, TodoItemService
+from app.domain.todo_list_service import TodoListNotFoundError
 
 router = APIRouter(
     prefix="/todo-items",
@@ -19,19 +19,19 @@ router = APIRouter(
     responses={404: {"description": "TODO list or TODO item not found"}},
 )
 
-_repository: TodoItemRepository
+_service: TodoItemService
 
 
-def get_repository():
-    return _repository
+def get_service():
+    return _service
 
 
-def repository(repository: TodoItemRepository):
-    global _repository
-    _repository = repository
+def set_service(service: TodoItemService):
+    global _service
+    _service = service
 
 
-RepositoryDep = Annotated[TodoItemRepository, Depends(get_repository)]
+ServiceDep = Annotated[TodoItemService, Depends(get_service)]
 
 
 @contextmanager
@@ -52,33 +52,33 @@ def exception_handling():
 
 @router.get("/", response_model=list[TodoItem])
 async def items(
-    repo: RepositoryDep,
+    service: ServiceDep,
     list_id: TodoListID | None = Query(None, alias="list-id"),
     is_completed: bool | None = Query(None, alias="is-completed"),
 ):
     with exception_handling():
-        return await repo.items(list_id, is_completed)
+        return await service.items(list_id, is_completed)
 
 
 @router.get("/{id}", response_model=TodoItem)
-async def item_by_id(repo: RepositoryDep, id: TodoItemID):
+async def item_by_id(service: ServiceDep, id: TodoItemID):
     with exception_handling():
-        return await repo.item_by_id(id)
+        return await service.item_by_id(id)
 
 
 @router.post("/", response_model=TodoItem)
-async def new_item(repo: RepositoryDep, item: TodoItemCreate):
+async def new_item(service: ServiceDep, item: TodoItemCreate):
     with exception_handling():
-        return await repo.new_item(item)
+        return await service.new_item(item)
 
 
 @router.patch("/{id}", response_model=TodoItem)
-async def update_item(repo: RepositoryDep, id: TodoItemID, item: TodoItemUpdate):
+async def update_item(service: ServiceDep, id: TodoItemID, item: TodoItemUpdate):
     with exception_handling():
-        return await repo.update_item(id, item)
+        return await service.update_item(id, item)
 
 
 @router.delete("/{id}", response_model=TodoItem)
-async def delete_item(repo: RepositoryDep, id: TodoItemID):
+async def delete_item(service: ServiceDep, id: TodoItemID):
     with exception_handling():
-        return await repo.delete_item(id)
+        return await service.delete_item(id)

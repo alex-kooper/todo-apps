@@ -14,7 +14,7 @@ class TodoItemNotFoundError(Exception):
         self.id = id
 
 
-class TodoItemRepository(Protocol):
+class TodoItemService(Protocol):
     async def items(
         self, list_id: TodoListID | None = None, is_completed: bool | None = None
     ) -> list[TodoItem]: ...

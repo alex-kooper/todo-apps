@@ -5,11 +5,11 @@ from app.domain.models import (
     TodoItemUpdate,
     TodoListID,
 )
-from app.domain.todo_item_repository import TodoItemNotFoundError
-from app.domain.todo_list_repository import TodoListNotFoundError
+from app.domain.todo_item_service import TodoItemNotFoundError
+from app.domain.todo_list_service import TodoListNotFoundError
 
 
-class InMemoryTodoItemRepository:
+class TodoItemServiceWithInMemoryStorage:
     _item_storage: dict[TodoItemID, TodoItem]
     _list_to_item: dict[TodoListID, list[TodoItemID]]
 

@@ -8,7 +8,7 @@ class TodoListNotFoundError(Exception):
         self.id = id
 
 
-class TodoListRepository(Protocol):
+class TodoListService(Protocol):
     async def lists(self) -> list[TodoList]: ...
 
     async def list_by_id(self, id: TodoListID) -> TodoList: ...
