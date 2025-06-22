@@ -6,7 +6,9 @@ import app.domain.models.TodoItemUpdate
 
 import zio.*
 
-final case class TodoItemNotFound(id: Int)
+import app.domain.models.TodoItemId
+
+final case class TodoItemNotFound(id: TodoItemId)
 
 trait TodoItemService:
   def items(
@@ -14,10 +16,10 @@ trait TodoItemService:
       isCompleted: Option[Boolean] = None
   ): UIO[Unit]
 
-  def itemById(id: Int): IO[TodoItem, TodoItemNotFound]
+  def itemById(id: TodoItemId): IO[TodoItem, TodoItemNotFound]
 
   def newItem(item: TodoItemCreate): UIO[TodoItem]
 
-  def updateItem(id: Int, item: TodoItemUpdate): IO[TodoItem, TodoItemNotFound]
+  def updateItem(id: TodoItemId, item: TodoItemUpdate): IO[TodoItem, TodoItemNotFound]
 
-  def deleteItem(id: Int): IO[Unit, TodoItemNotFound]
+  def deleteItem(id: TodoItemId): IO[Unit, TodoItemNotFound]

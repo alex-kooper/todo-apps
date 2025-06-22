@@ -1,18 +1,20 @@
 package app.domain
 
 import app.domain.models.TodoList
+import app.domain.models.TodoListId
 
 import zio.*
+import neotype.common.NonEmptyString
 
-final case class TodoListNotFoundError(id: Int)
+final case class TodoListNotFoundError(id: TodoListId)
 
 trait TodoListService:
   def lists: UIO[TodoList]
 
-  def listById(id: Int): IO[TodoList, TodoListNotFoundError]
+  def listById(id: TodoListId): IO[TodoList, TodoListNotFoundError]
 
-  def newList(name: String): UIO[TodoList]
+  def newList(name: NonEmptyString): UIO[TodoList]
 
-  def updateList(id: Int, name: String): IO[TodoList, TodoListNotFoundError]
+  def updateList(id: TodoListId, name: NonEmptyString): IO[TodoList, TodoListNotFoundError]
 
-  def deleteList(id: Int): IO[Unit, TodoListNotFoundError]
+  def deleteList(id: TodoListId): IO[Unit, TodoListNotFoundError]
