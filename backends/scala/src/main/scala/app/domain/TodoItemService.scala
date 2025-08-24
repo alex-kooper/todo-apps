@@ -14,12 +14,15 @@ trait TodoItemService:
   def items(
       listId: Option[Int] = None,
       isCompleted: Option[Boolean] = None
-  ): UIO[Unit]
+  ): UIO[Seq[TodoItem]]
 
-  def itemById(id: TodoItemId): IO[TodoItem, TodoItemNotFound]
+  def itemById(id: TodoItemId): IO[TodoItemNotFound, TodoItem]
 
   def newItem(item: TodoItemCreate): UIO[TodoItem]
 
-  def updateItem(id: TodoItemId, item: TodoItemUpdate): IO[TodoItem, TodoItemNotFound]
+  def updateItem(
+      id: TodoItemId,
+      item: TodoItemUpdate
+  ): IO[TodoItemNotFound, TodoItem]
 
-  def deleteItem(id: TodoItemId): IO[Unit, TodoItemNotFound]
+  def deleteItem(id: TodoItemId): IO[TodoItemNotFound, Unit]

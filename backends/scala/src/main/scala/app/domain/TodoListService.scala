@@ -9,12 +9,15 @@ import neotype.common.NonEmptyString
 final case class TodoListNotFoundError(id: TodoListId)
 
 trait TodoListService:
-  def lists: UIO[TodoList]
+  def lists: UIO[Seq[TodoList]]
 
-  def listById(id: TodoListId): IO[TodoList, TodoListNotFoundError]
+  def listById(id: TodoListId): IO[TodoListNotFoundError, TodoList]
 
   def newList(name: NonEmptyString): UIO[TodoList]
 
-  def updateList(id: TodoListId, name: NonEmptyString): IO[TodoList, TodoListNotFoundError]
+  def updateList(
+      id: TodoListId,
+      name: NonEmptyString
+  ): IO[TodoListNotFoundError, TodoList]
 
-  def deleteList(id: TodoListId): IO[Unit, TodoListNotFoundError]
+  def deleteList(id: TodoListId): IO[TodoListNotFoundError, Unit]
