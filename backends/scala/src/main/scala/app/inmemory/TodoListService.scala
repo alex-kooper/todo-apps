@@ -1,15 +1,15 @@
 package app.inmemory
 
 import app.domain.models.{TodoListId, TodoList}
-import app.domain.TodoListService
+import app.domain
 import app.domain.TodoListNotFoundError
 import neotype.common.NonEmptyString
 import zio.*
 
-final case class TodoListServiceWithInMemoryStorage(
+final case class TodoListService(
     currendListId: Ref[Int],
     todoListMap: Ref[Map[TodoListId, TodoList]]
-) extends TodoListService:
+) extends domain.TodoListService:
   override def lists: UIO[Seq[TodoList]] = todoListMap.get.map(_.values.toSeq)
 
   override def listById(id: TodoListId): IO[TodoListNotFoundError, TodoList] =
@@ -53,11 +53,11 @@ final case class TodoListServiceWithInMemoryStorage(
         ZIO.fromOption(_).mapError(_ => TodoListNotFoundError(id))
       )
 
-object TodoListServiceWithInMemoryStorage:
-  val layer: ULayer[TodoListService] =
+object TodoListService:
+  val live: ULayer[TodoListService] =
     ZLayer.scoped {
       for
         currentId <- Ref.make(0)
         todoListMap <- Ref.make(Map.empty[TodoListId, TodoList])
-      yield TodoListServiceWithInMemoryStorage(currentId, todoListMap)
+      yield TodoListService(currentId, todoListMap)
     }
