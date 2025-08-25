@@ -4,10 +4,11 @@ import app.domain.models.{TodoListId, TodoList}
 import app.domain
 import app.domain.TodoListNotFoundError
 import neotype.common.NonEmptyString
+import neotype.*
 import zio.*
 
 final case class TodoListService(
-    currendListId: Ref[Int],
+    currentListId: Ref[TodoListId],
     todoListMap: Ref[Map[TodoListId, TodoList]]
 ) extends domain.TodoListService:
   override def lists: UIO[Seq[TodoList]] = todoListMap.get.map(_.values.toSeq)
@@ -18,9 +19,9 @@ final case class TodoListService(
     }
 
   override def newList(name: NonEmptyString): UIO[TodoList] =
-    currendListId.incrementAndGet
-      .flatMap { newId =>
-        val todoListId = TodoListId(newId)
+    currentListId
+      .updateAndGet(id => TodoListId(id.unwrap + 1))
+      .flatMap { todoListId =>
         val todoList = TodoList(todoListId, name)
         todoListMap.update(_ + (todoListId -> todoList)).as(todoList)
       }
@@ -57,7 +58,7 @@ object TodoListService:
   val live: ULayer[TodoListService] =
     ZLayer.scoped {
       for
-        currentId <- Ref.make(0)
+        currentId <- Ref.make(TodoListId(0))
         todoListMap <- Ref.make(Map.empty[TodoListId, TodoList])
       yield TodoListService(currentId, todoListMap)
     }
