@@ -1,5 +1,6 @@
 val scala3Version = "3.7.1"
 val http4sVersion = "0.23.30"
+val neotypeVersion = "0.3.25"
 
 lazy val root = project
   .in(file("."))
@@ -10,7 +11,8 @@ lazy val root = project
     libraryDependencies ++= Seq(
       "org.scalameta" %% "munit" % "1.0.0" % Test,
       "dev.zio" %% "zio" % "2.1.19",
-      "io.github.kitlangton" %% "neotype" % "0.3.23",
+      "io.github.kitlangton" %% "neotype" % neotypeVersion,
+      "io.github.kitlangton" %% "neotype-circe" % neotypeVersion,
       "org.http4s" %% "http4s-ember-client" % http4sVersion,
       "org.http4s" %% "http4s-ember-server" % http4sVersion,
       "org.http4s" %% "http4s-dsl" % http4sVersion,

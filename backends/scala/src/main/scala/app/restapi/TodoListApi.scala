@@ -15,7 +15,7 @@ object TodoListApi:
 
   def routes: HttpRoutes[AppTask] =
     val dsl = new Http4sDsl[AppTask] {}
-    import dsl._
+    import dsl.*
 
     HttpRoutes.of[AppTask]:
       case GET -> Root / "hello" / name =>
