@@ -9,12 +9,14 @@ import zio.interop.catz.*
 import zio.Console.*
 import com.comcast.ip4s.*
 import app.restapi.TodoListApi
+import app.inmemory.TodoListService
+import app.domain.TodoListService
 
 object MyApp extends ZIOAppDefault {
-  type AppTask[A] = RIO[Scope, A]
+  type AppTask[A] = RIO[app.domain.TodoListService & Scope, A]
 
   val server: TaskLayer[Unit] =
-    ZLayer.scoped:
+    ZLayer.scoped {
       EmberServerBuilder
         .default[AppTask]
         .withHost(ipv4"0.0.0.0")
@@ -22,7 +24,9 @@ object MyApp extends ZIOAppDefault {
         .withHttpApp(Router("/" -> TodoListApi.routes).orNotFound)
         .build
         .toScopedZIO
+        .provideSomeLayer(app.inmemory.TodoListService.live)
         .unit
+    }
 
   override def run =
     for

@@ -11,7 +11,7 @@ import app.domain.models.*
 import app.domain.TodoListService
 
 object TodoListApi:
-  type AppTask[A] = RIO[Scope, A]
+  type AppTask[A] = RIO[TodoListService & Scope, A]
 
   def routes: HttpRoutes[AppTask] =
     val dsl = new Http4sDsl[AppTask] {}
