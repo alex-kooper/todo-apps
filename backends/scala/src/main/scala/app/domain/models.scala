@@ -43,3 +43,7 @@ final case class TodoList(
     id: TodoListId,
     name: NonEmptyString
 ) derives Codec
+
+final case class TodoListUpdate(
+    name: NonEmptyString
+) derives Codec

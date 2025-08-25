@@ -11,6 +11,8 @@ import app.domain.models.*
 import app.domain.TodoListService
 
 import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
+import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
+import org.http4s.circe.CirceEntityDecoder.circeEntityDecoder
 
 object TodoListApi:
   type AppTask[A] = RIO[TodoListService & Scope, A]
@@ -21,4 +23,12 @@ object TodoListApi:
 
     HttpRoutes.of[AppTask]:
       case GET -> Root =>
-        Ok(TodoListService.lists)
+        Ok:
+          TodoListService.lists
+
+      case req @ POST -> Root =>
+        Created:
+          req
+            .as[TodoListUpdate]
+            .flatMap: todoList =>
+              TodoListService.newList(todoList.name)
