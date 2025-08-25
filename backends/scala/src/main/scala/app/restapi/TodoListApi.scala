@@ -10,6 +10,8 @@ import zio.interop.catz.*
 import app.domain.models.*
 import app.domain.TodoListService
 
+import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
+
 object TodoListApi:
   type AppTask[A] = RIO[TodoListService & Scope, A]
 
@@ -18,5 +20,5 @@ object TodoListApi:
     import dsl.*
 
     HttpRoutes.of[AppTask]:
-      case GET -> Root / "hello" / name =>
-        Ok(s"Hello, $name!")
+      case GET -> Root =>
+        Ok(TodoListService.lists)
