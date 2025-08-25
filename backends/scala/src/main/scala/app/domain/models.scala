@@ -12,7 +12,8 @@ type TodoItemId = TodoItemId.Type
 object TodoItemId extends Newtype[Int]
 
 type TodoListId = TodoListId.Type
-object TodoListId extends Newtype[Int]
+object TodoListId extends Newtype[Int]:
+  given Ordering[TodoListId] = Ordering.by(_.unwrap)
 
 type TodoItemPriority = TodoItemPriority.Type
 object TodoItemPriority extends Newtype[Int]

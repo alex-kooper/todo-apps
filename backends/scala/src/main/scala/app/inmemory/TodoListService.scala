@@ -1,6 +1,6 @@
 package app.inmemory
 
-import app.domain.models.{TodoListId, TodoList}
+import app.domain.models.*
 import app.domain
 import app.domain.TodoListNotFoundError
 import neotype.common.NonEmptyString
@@ -11,7 +11,8 @@ final case class TodoListService(
     currentListId: Ref[TodoListId],
     todoListMap: Ref[Map[TodoListId, TodoList]]
 ) extends domain.TodoListService:
-  override def lists: UIO[Seq[TodoList]] = todoListMap.get.map(_.values.toSeq)
+  override def lists: UIO[Seq[TodoList]] =
+    todoListMap.get.map(_.values.toSeq.sortBy(_.id))
 
   override def listById(id: TodoListId): IO[TodoListNotFoundError, TodoList] =
     todoListMap.get.flatMap { map =>
