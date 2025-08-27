@@ -32,6 +32,16 @@ object TodoListApi:
         Ok:
           TodoListService.lists
 
+      case GET -> Root / TodoListIdPath(id) =>
+        TodoListService
+          .listById(id)
+          .foldZIO(
+            { case TodoListNotFoundError(id) =>
+              NotFound(s"Todo list with ID $id not found")
+            },
+            list => Ok(list)
+          )
+
       case req @ POST -> Root =>
         Created:
           req
@@ -49,12 +59,15 @@ object TodoListApi:
             _ => NoContent()
           )
 
-      case GET -> Root / TodoListIdPath(id) =>
-        TodoListService
-          .listById(id)
-          .foldZIO(
-            { case TodoListNotFoundError(id) =>
-              NotFound(s"Todo list with ID $id not found")
-            },
-            list => Ok(list)
-          )
+      case req @ PUT -> Root / TodoListIdPath(id) =>
+        req
+          .as[TodoListUpdate]
+          .flatMap: todoList =>
+            TodoListService
+              .updateList(id, todoList.name)
+              .foldZIO(
+                { case TodoListNotFoundError(id) =>
+                  NotFound(s"Todo list with ID $id not found")
+                },
+                updatedList => Ok(updatedList)
+              )
