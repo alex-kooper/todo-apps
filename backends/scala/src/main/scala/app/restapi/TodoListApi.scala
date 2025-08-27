@@ -13,9 +13,15 @@ import app.domain.TodoListService
 import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
 import org.http4s.circe.CirceEntityDecoder.circeEntityDecoder
+import scala.util.Try
+import app.domain.TodoListNotFoundError
 
 object TodoListApi:
   type AppTask[A] = RIO[TodoListService & Scope, A]
+
+  object TodoListIdPath:
+    def unapply(str: String): Option[TodoListId] =
+      str.toIntOption.map(id => TodoListId(id))
 
   def routes: HttpRoutes[AppTask] =
     val dsl = new Http4sDsl[AppTask] {}
@@ -32,3 +38,23 @@ object TodoListApi:
             .as[TodoListUpdate]
             .flatMap: todoList =>
               TodoListService.newList(todoList.name)
+
+      case DELETE -> Root / TodoListIdPath(id) =>
+        TodoListService
+          .deleteList(id)
+          .foldZIO(
+            { case TodoListNotFoundError(id) =>
+              NotFound(s"Todo list with ID $id not found")
+            },
+            _ => NoContent()
+          )
+
+      case GET -> Root / TodoListIdPath(id) =>
+        TodoListService
+          .listById(id)
+          .foldZIO(
+            { case TodoListNotFoundError(id) =>
+              NotFound(s"Todo list with ID $id not found")
+            },
+            list => Ok(list)
+          )
