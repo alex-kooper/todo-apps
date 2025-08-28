@@ -55,7 +55,7 @@ final case class TodoService(
       }
       .flatMap(
         ZIO.fromOption(_).mapError(_ => TodoListNotFoundError(id))
-      )
+      ) *> deleteItemsByListId(id)
 
   override def items(
       listId: Option[TodoListId] = None,
@@ -80,18 +80,19 @@ final case class TodoService(
   override def newItem(
       item: TodoItemCreate
   ): IO[TodoListNotFoundError, TodoItem] =
-    currentItemId
-      .updateAndGet(id => TodoItemId(id.unwrap + 1))
-      .flatMap { todoItemId =>
-        val todoItem = TodoItem(
-          todoItemId,
-          item.listId,
-          item.title,
-          item.isCompleted,
-          item.priority
-        )
-        todoItemMap.update(_ + (todoItemId -> todoItem)).as(todoItem)
-      }
+    listById(item.listId) *>
+      currentItemId
+        .updateAndGet(id => TodoItemId(id.unwrap + 1))
+        .flatMap { todoItemId =>
+          val todoItem = TodoItem(
+            todoItemId,
+            item.listId,
+            item.title,
+            item.isCompleted,
+            item.priority
+          )
+          todoItemMap.update(_ + (todoItemId -> todoItem)).as(todoItem)
+        }
 
   override def deleteItem(
       id: TodoItemId
@@ -131,6 +132,11 @@ final case class TodoService(
       update.isCompleted.getOrElse(item.isCompleted),
       update.priority.getOrElse(item.priority)
     )
+
+  private def deleteItemsByListId(listId: TodoListId): UIO[Unit] =
+    todoItemMap.update { map =>
+      map.filterNot { case (_, item) => item.listId == listId }
+    }
 
 object TodoService:
   val live: ULayer[TodoService] =
