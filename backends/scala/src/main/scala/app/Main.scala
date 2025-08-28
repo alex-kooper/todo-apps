@@ -8,12 +8,12 @@ import zio.*
 import zio.interop.catz.*
 import zio.Console.*
 import com.comcast.ip4s.*
-import app.restapi.TodoListApi
-import app.inmemory.TodoListService
-import app.domain.TodoListService
+import app.restapi.TodoApi
+import app.inmemory.TodoService
+import app.domain.TodoService
 
 object MyApp extends ZIOAppDefault {
-  type AppTask[A] = RIO[app.domain.TodoListService & Scope, A]
+  type AppTask[A] = RIO[app.domain.TodoService & Scope, A]
 
   val server: TaskLayer[Unit] =
     ZLayer.scoped {
@@ -21,10 +21,10 @@ object MyApp extends ZIOAppDefault {
         .default[AppTask]
         .withHost(ipv4"0.0.0.0")
         .withPort(port"8080")
-        .withHttpApp(Router("/todo-lists" -> TodoListApi.routes).orNotFound)
+        .withHttpApp(Router("/todo-lists" -> TodoApi.routes).orNotFound)
         .build
         .toScopedZIO
-        .provideSomeLayer(app.inmemory.TodoListService.live)
+        .provideSomeLayer(app.inmemory.TodoService.live)
         .unit
     }
 

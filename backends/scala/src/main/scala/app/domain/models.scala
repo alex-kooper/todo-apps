@@ -9,14 +9,16 @@ import io.circe.{Encoder, Decoder}
 import io.circe.generic.semiauto.*
 
 type TodoItemId = TodoItemId.Type
-object TodoItemId extends Newtype[Int]
+object TodoItemId extends Newtype[Int]:
+  given Ordering[TodoItemId] = Ordering.by(_.unwrap)
 
 type TodoListId = TodoListId.Type
 object TodoListId extends Newtype[Int]:
   given Ordering[TodoListId] = Ordering.by(_.unwrap)
 
 type TodoItemPriority = TodoItemPriority.Type
-object TodoItemPriority extends Newtype[Int]
+object TodoItemPriority extends Newtype[Int]:
+  given Ordering[TodoItemPriority] = Ordering.by(_.unwrap)
 
 final case class TodoItemCreate(
     listId: TodoListId,

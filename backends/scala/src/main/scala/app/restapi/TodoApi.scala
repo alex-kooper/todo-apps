@@ -8,7 +8,7 @@ import zio.*
 import zio.interop.catz.*
 
 import app.domain.models.*
-import app.domain.TodoListService
+import app.domain.TodoService
 
 import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
 import org.http4s.circe.CirceEntityCodec.circeEntityDecoder
@@ -16,8 +16,8 @@ import org.http4s.circe.CirceEntityDecoder.circeEntityDecoder
 import scala.util.Try
 import app.domain.TodoListNotFoundError
 
-object TodoListApi:
-  type AppTask[A] = RIO[TodoListService & Scope, A]
+object TodoApi:
+  type AppTask[A] = RIO[TodoService & Scope, A]
 
   object TodoListIdPath:
     def unapply(str: String): Option[TodoListId] =
@@ -30,10 +30,10 @@ object TodoListApi:
     HttpRoutes.of[AppTask]:
       case GET -> Root =>
         Ok:
-          TodoListService.lists
+          TodoService.lists
 
       case GET -> Root / TodoListIdPath(id) =>
-        TodoListService
+        TodoService
           .listById(id)
           .foldZIO(
             { case TodoListNotFoundError(id) =>
@@ -47,10 +47,10 @@ object TodoListApi:
           req
             .as[TodoListUpdate]
             .flatMap: todoList =>
-              TodoListService.newList(todoList.name)
+              TodoService.newList(todoList.name)
 
       case DELETE -> Root / TodoListIdPath(id) =>
-        TodoListService
+        TodoService
           .deleteList(id)
           .foldZIO(
             { case TodoListNotFoundError(id) =>
@@ -63,7 +63,7 @@ object TodoListApi:
         req
           .as[TodoListUpdate]
           .flatMap: todoList =>
-            TodoListService
+            TodoService
               .updateList(id, todoList.name)
               .foldZIO(
                 { case TodoListNotFoundError(id) =>
