@@ -28,11 +28,11 @@ object TodoApi:
     import dsl.*
 
     HttpRoutes.of[AppTask]:
-      case GET -> Root =>
+      case GET -> Root / "todo-lists"=>
         Ok:
           TodoService.lists
 
-      case GET -> Root / TodoListIdPath(id) =>
+      case GET -> Root / "todo-lists" / TodoListIdPath(id) =>
         TodoService
           .listById(id)
           .foldZIO(
@@ -42,14 +42,14 @@ object TodoApi:
             list => Ok(list)
           )
 
-      case req @ POST -> Root =>
+      case req @ POST -> Root / "todo-lists" =>
         Created:
           req
             .as[TodoListUpdate]
             .flatMap: todoList =>
               TodoService.newList(todoList.name)
 
-      case DELETE -> Root / TodoListIdPath(id) =>
+      case DELETE -> Root / "todo-lists" / TodoListIdPath(id) =>
         TodoService
           .deleteList(id)
           .foldZIO(
@@ -59,7 +59,7 @@ object TodoApi:
             _ => NoContent()
           )
 
-      case req @ PUT -> Root / TodoListIdPath(id) =>
+      case req @ PUT -> Root / "todo-lists" / TodoListIdPath(id) =>
         req
           .as[TodoListUpdate]
           .flatMap: todoList =>
