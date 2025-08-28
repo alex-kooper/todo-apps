@@ -16,7 +16,7 @@ import org.http4s.circe.CirceEntityDecoder.circeEntityDecoder
 import scala.util.Try
 import app.domain.TodoListNotFoundError
 
-object TodoApi:
+object TodoListApi:
   type AppTask[A] = RIO[TodoService & Scope, A]
 
   object TodoListIdPath:
@@ -28,11 +28,11 @@ object TodoApi:
     import dsl.*
 
     HttpRoutes.of[AppTask]:
-      case GET -> Root / "todo-lists"=>
+      case GET -> Root =>
         Ok:
           TodoService.lists
 
-      case GET -> Root / "todo-lists" / TodoListIdPath(id) =>
+      case GET -> Root / TodoListIdPath(id) =>
         TodoService
           .listById(id)
           .foldZIO(
@@ -42,14 +42,14 @@ object TodoApi:
             list => Ok(list)
           )
 
-      case req @ POST -> Root / "todo-lists" =>
+      case req @ POST -> Root =>
         Created:
           req
             .as[TodoListUpdate]
             .flatMap: todoList =>
               TodoService.newList(todoList.name)
 
-      case DELETE -> Root / "todo-lists" / TodoListIdPath(id) =>
+      case DELETE -> Root / TodoListIdPath(id) =>
         TodoService
           .deleteList(id)
           .foldZIO(
@@ -59,7 +59,7 @@ object TodoApi:
             _ => NoContent()
           )
 
-      case req @ PUT -> Root / "todo-lists" / TodoListIdPath(id) =>
+      case req @ PUT -> Root / TodoListIdPath(id) =>
         req
           .as[TodoListUpdate]
           .flatMap: todoList =>

@@ -8,7 +8,7 @@ import zio.*
 import zio.interop.catz.*
 import zio.Console.*
 import com.comcast.ip4s.*
-import app.restapi.TodoApi
+import app.restapi.TodoListApi
 import app.inmemory.TodoService
 import app.domain.TodoService
 
@@ -21,7 +21,7 @@ object MyApp extends ZIOAppDefault {
         .default[AppTask]
         .withHost(ipv4"0.0.0.0")
         .withPort(port"8080")
-        .withHttpApp(Router("/" -> TodoApi.routes).orNotFound)
+        .withHttpApp(Router("/todo-lists" -> TodoListApi.routes).orNotFound)
         .build
         .toScopedZIO
         .provideSomeLayer(app.inmemory.TodoService.live)
